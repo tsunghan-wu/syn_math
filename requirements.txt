@@ -1,0 +1,64 @@
+# TikZ Math Image Generator - Requirements
+# ==========================================
+#
+# This project uses only Python standard library modules:
+# - argparse
+# - os
+# - random
+# - subprocess
+# - tempfile
+# - shutil
+# - math
+# - pathlib
+#
+# No pip packages are required!
+#
+# SYSTEM DEPENDENCIES (must be installed separately):
+# ---------------------------------------------------
+#
+# 1. TeX Live (with TikZ and pgfplots packages)
+#    Ubuntu/Debian:
+#      sudo apt install texlive-full
+#    Or minimal installation:
+#      sudo apt install texlive-latex-base texlive-pictures texlive-latex-extra pgf
+#
+#    Fedora:
+#      sudo dnf install texlive-scheme-full
+#
+#    Arch Linux:
+#      sudo pacman -S texlive-most
+#
+#    macOS (with Homebrew):
+#      brew install --cask mactex
+#
+# 2. PDF to PNG converter (at least one of these):
+#
+#    Option A - poppler-utils (recommended, faster):
+#      Ubuntu/Debian: sudo apt install poppler-utils
+#      Fedora: sudo dnf install poppler-utils
+#      Arch: sudo pacman -S poppler
+#      macOS: brew install poppler
+#
+#    Option B - ImageMagick:
+#      Ubuntu/Debian: sudo apt install imagemagick
+#      Fedora: sudo dnf install ImageMagick
+#      Arch: sudo pacman -S imagemagick
+#      macOS: brew install imagemagick
+#
+#      Note: For ImageMagick, you may need to edit the security policy
+#      to allow PDF conversion. Edit /etc/ImageMagick-*/policy.xml and
+#      change the PDF policy line to:
+#        <policy domain="coder" rights="read|write" pattern="PDF" />
+#
+# QUICK SETUP (Ubuntu/Debian):
+# ----------------------------
+#   sudo apt update
+#   sudo apt install texlive-full poppler-utils
+#
+# VERIFICATION:
+# -------------
+#   pdflatex --version    # Should show TeX Live version
+#   pdftoppm -v           # Should show poppler version
+#   # OR
+#   convert --version     # Should show ImageMagick version
+
