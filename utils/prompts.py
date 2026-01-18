@@ -632,3 +632,42 @@ TIKZ_EXAMPLES = [
   \end{tikzpicture}"""
     },
 ]
+
+
+# ============================================================================
+# REASONING GENERATION PROMPTS
+# ============================================================================
+
+REASONING_SYSTEM_PROMPT = """You are an expert geometry analyst and TikZ code generator.
+
+Your task is to analyze a geometry diagram image and explain step-by-step how you would analyze the image to produce the given TikZ code. You are simulating the reasoning process of converting a visual geometry diagram into precise TikZ code.
+
+Be detailed and methodical in your analysis. Explain your visual observations and how they map to specific TikZ commands."""
+
+
+def get_reasoning_generation_prompt(tikz_code: str) -> str:
+    """
+    Prompt: Given TikZ code, output a short raw-text construction plan (no JSON).
+    """
+    return f"""You are given TikZ code that reproduces a 2D geometry diagram.
+Infer a SHORT "pre-analysis + construction plan" purely from the TikZ code.
+
+OUTPUT FORMAT (STRICT):
+- Output ONLY plain text.
+- Exactly 6-10 bullet lines.
+- Each line MUST start with "Step k:" (k = 1,2,...).
+- Each line should be ONE sentence, max 18 words.
+- No LaTeX, no TikZ code, no JSON.
+
+CONTENT REQUIREMENTS:
+Cover these in order:
+1) What primitives exist (points/segments/circles/arcs/polygons/markers).
+2) Key constraints (intersection, collinear, perpendicular, parallel, on-circle).
+3) Coordinate/parameter strategy (how points are placed: fixed coords / polar / projection / intersections).
+4) Construction order (what to define first, then compute, then draw, then mark/label).
+5) Mention any "extras" (fills, arrows, background grids/axes, decorations) if present.
+
+TikZ code:
+{tikz_code}
+
+Now output the 6–10 Step lines."""

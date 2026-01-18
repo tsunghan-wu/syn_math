@@ -20,7 +20,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 LATEX_PREAMBLE = r"""
 \documentclass[tikz,border=10pt]{standalone}
+\usepackage{xeCJK}
 \usepackage{tikz}
+\usepackage{tikz-3dplot}
 \usepackage{amsmath,amssymb}
 \usetikzlibrary{angles,quotes,calc,intersections,through,backgrounds,patterns,decorations.markings,arrows.meta,shapes}
 \begin{document}
@@ -33,7 +35,9 @@ LATEX_POSTAMBLE = r"""
 # Preamble with coordinate export enabled
 LATEX_PREAMBLE_WITH_COORDS = r"""
 \documentclass[tikz,border=10pt]{standalone}
+\usepackage{xeCJK}
 \usepackage{tikz}
+\usepackage{tikz-3dplot}
 \usepackage{amsmath,amssymb}
 \usetikzlibrary{angles,quotes,calc,intersections,through,backgrounds,patterns,decorations.markings,arrows.meta,shapes}
 
@@ -70,7 +74,7 @@ def compile_tikz_to_png(tikz_code: str, output_path: str, dpi: int = 300) -> boo
         
         try:
             result = subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_file],
+                ["xelatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_file],
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -88,7 +92,7 @@ def compile_tikz_to_png(tikz_code: str, output_path: str, dpi: int = 300) -> boo
             print("Error: LaTeX compilation timed out")
             return False
         except FileNotFoundError:
-            print("Error: pdflatex not found. Please install TeX Live.")
+            print("Error: xelatex not found. Please install TeX Live.")
             return False
         
         # Convert PDF to PNG
@@ -150,7 +154,7 @@ def compile_tikz_with_coords(tikz_code: str, output_path: str, dpi: int = 300) -
         
         try:
             result = subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_file],
+                ["xelatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_file],
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -168,7 +172,7 @@ def compile_tikz_with_coords(tikz_code: str, output_path: str, dpi: int = 300) -
             print("Error: LaTeX compilation timed out")
             return False, None
         except FileNotFoundError:
-            print("Error: pdflatex not found. Please install TeX Live.")
+            print("Error: xelatex not found. Please install TeX Live.")
             return False, None
         
         # Parse bounding box from coords file
@@ -1522,7 +1526,8 @@ def generate_labeled_pdf(
     output_path: str,
     elements: dict,
     labels: dict,
-    combination_masks: dict
+    combination_masks: dict,
+    pdf_output_path: str = None
 ) -> str:
     """
     Generate a PDF document with labeled elements.
@@ -1533,10 +1538,11 @@ def generate_labeled_pdf(
     
     Args:
         tikz_code: Original TikZ code
-        output_path: Base path for output
+        output_path: Base path for output (PNG path)
         elements: Parsed elements dict
         labels: Point labels dict
         combination_masks: Output from generate_combination_masks()
+        pdf_output_path: Optional explicit path for PDF output
     
     Returns:
         Path to generated PDF
@@ -1682,7 +1688,7 @@ def generate_labeled_pdf(
 """
     
     # Compile to PDF
-    pdf_path = output_path.replace('.png', '_labels.pdf')
+    pdf_path = pdf_output_path if pdf_output_path else output_path.replace('.png', '_labels.pdf')
     
     with tempfile.TemporaryDirectory() as tmpdir:
         tex_file = os.path.join(tmpdir, "labels.tex")
