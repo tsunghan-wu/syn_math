@@ -1,0 +1,6 @@
+{
+  "index": 10,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_1757200.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Coordinates\n  \\coordinate (P) at (0,3);\n  \\coordinate (A) at (0,0);\n  \\coordinate (B) at (1.5,0);\n  \\coordinate (C) at (3.5,0);\n\n  % Horizontal lines (top and bottom)\n  \\draw (-1,3) -- (4,3);\n  \\draw (-1,0) -- (4,0);\n\n  % Segments from P to A, B, C\n  \\draw (P) -- (A);\n  \\draw (P) -- (B);\n  \\draw (P) -- (C);\n\n  % Labels\n  \\node[above] at (P) {P};\n  \\node[below] at (A) {A};\n  \\node[below] at (B) {B};\n  \\node[below] at (C) {C};\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives are four points, two horizontal lines, and three segments from P to base points.\nStep 2: Constraints: A, B, C are collinear on the bottom line and P lies on the top horizontal.\nStep 3: Coordinates use fixed Cartesian positions: P at (0,3), A at (0,0), B at (1.5,0), C at (3.5,0).\nStep 4: Horizontal lines drawn across x from -1 to 4 at y=3 and y=0 to set baselines.\nStep 5: Construction order: define coordinates, draw horizontals, connect P to A,B,C, then place labels.\nStep 6: Labels placed with node anchors above P and below A, B, C for readability.\nStep 7: Extras: no fills, arrows, grids, or decorations; simple strokes and scale factor one used."
+}

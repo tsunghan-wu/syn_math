@@ -1,14 +1,30 @@
 # Configuration
-JSONL_FILE = "image_classifications_01102026.jsonl"
+JSONL_FILE = "01182026_v2.jsonl"
 IMAGE_ROOT = "/home/annelee/datasets/OpenMMReasoner-SFT-874K/sft_image"
-OUTPUT_DIR = "function_graph_01182026_v4"
+OUTPUT_DIR = "geometry_01182026_v6"
 DEFAULT_COUNT = 50
+
+# Available sub-categories for programmatic images
+SUB_CATEGORIES = [
+    "2D_geometry",
+    "3D_transparent_fig",
+    "bar_histogram",
+    "line",
+    "pie_flow_venn",
+    "text",
+]
 
 import argparse
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Run geometry image generation")
+    
+    # Mode selection
+    parser.add_argument("--mode", "-m", type=str, default="generate",
+                        choices=["generate", "segment"],
+                        help="Mode: 'generate' for TikZ generation, 'segment' for segmentation (default: generate)")
+    
     # Input dir and output dir
     parser.add_argument("--jsonl-file", "-j", type=str, default=JSONL_FILE,
                         help=f"JSONL file (default: {JSONL_FILE})")
@@ -16,6 +32,11 @@ def parse_args():
                         help=f"Input directory (default: {IMAGE_ROOT})")
     parser.add_argument("--output", "-o", type=str, default=OUTPUT_DIR,
                         help=f"Output directory (default: {OUTPUT_DIR})")
+    # Filtering options
+    parser.add_argument("--sub-category", "-s", type=str, nargs="+", 
+                        default=["2D_geometry"],
+                        choices=SUB_CATEGORIES,
+                        help=f"Sub-categories to include (choices: {SUB_CATEGORIES}, default: 2D_geometry)")
     # Backend and model
     parser.add_argument("--backend", type=str, default="vllm", choices=["vllm", "openai"],
                         help="Backend to use for generation (default: vllm)")

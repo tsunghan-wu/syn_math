@@ -1,0 +1,6 @@
+{
+  "index": 17,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_289535.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Coordinates\n  \\coordinate (A) at (0,3);\n  \\coordinate (B) at (-2,0);\n  \\coordinate (C) at (3,0);\n  \\coordinate (D) at (1.2,1.8);\n\n  % Triangle ABC\n  \\draw (A) -- (B) -- (C) -- cycle;\n\n  % Segment BD\n  \\draw (B) -- (D);\n\n  % Labels\n  \\node[above] at (A) {A};\n  \\node[left] at (B) {B};\n  \\node[right] at (C) {C};\n  \\node[above right] at (D) {D};\n\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives are points A, B, C, D, triangle edges AB, BC, CA, and segment BD.  \nStep 2: Key constraints: D is collinear on AC and lies on segment AC, BC is horizontal.  \nStep 3: Coordinate strategy uses fixed Cartesian coordinates given explicitly as numeric (x,y) pairs.  \nStep 4: Construction order begins by defining coordinates A, B, C, D before any drawing operations.  \nStep 5: Then draw triangle edges AB, BC, CA, followed by drawing segment BD between B and D.  \nStep 6: Finally add textual labels with positional anchors; no fills, arrows, grids, or extra decorations."
+}

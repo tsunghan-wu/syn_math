@@ -1,0 +1,6 @@
+{
+  "index": 13,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_1115382.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Circle center O\n  \\coordinate (O) at (0,0);\n  \n  % Points on circle (approximate equilateral triangle inscribed)\n  \\coordinate (A) at (0,2);\n  \\coordinate (B) at (-1.732,-1); % approx -√3, -1\n  \\coordinate (C) at (1.732,-1);  % approx √3, -1\n  \n  % Draw circle\n  \\draw (O) circle (2);\n  \n  % Draw triangle ABC\n  \\draw (A) -- (B) -- (C) -- cycle;\n  \n  % Mark center O\n  \\fill (O) circle (1.5pt);\n  \\node[above right] at (O) {O};\n  \n  \n  % Labels\n  \\node[above] at (A) {A};\n  \\node[left] at (B) {B};\n  \\node[right] at (C) {C};\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives are a circle, points A B C, triangle edges, center point, and labels.  \nStep 2: Constraints: A B C lie on the circle, forming an inscribed (approx equilateral) triangle.  \nStep 3: Coordinates placed with O at origin, radius 2, and fixed Cartesian coordinates for A B C.  \nStep 4: Construction order: define center and vertices, draw the circle, then connect vertices to form triangle.  \nStep 5: Add a small filled dot at O and place textual node labels near A B C and O.  \nStep 6: No additional decorations, grids, axes, arrows, or fills beyond simple strokes and the filled center dot."
+}

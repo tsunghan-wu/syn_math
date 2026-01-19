@@ -25,6 +25,19 @@ class TikZGenerationResult(BaseModel):
     reasoning: str
     tikz_code: str
 
+
+class SegmentationAnnotation(BaseModel):
+    """A single segmentation annotation."""
+    query: str
+    exists: bool
+    reasoning: str
+    append_tikz: str
+
+
+class SegmentationResult(BaseModel):
+    """Structured output for synthetic segmentation."""
+    annotations: list[SegmentationAnnotation]
+
 # Default path for in-context examples (relative to this file's parent)
 IN_CONTEXT_EXAMPLES_DIR = Path(__file__).parent.parent / "in-context-examples"
 
@@ -262,6 +275,119 @@ You MUST respond with a JSON object containing two fields:
     return TikZGenerationResult(reasoning="", tikz_code=tikz_code)
 
 
+def generate_synthetic_segmentation(
+    client: OpenAI,
+    image_path: str,
+    tikz_code: str,
+    model: str = "Qwen/Qwen3-VL-235B-A22B-Instruct"
+) -> SegmentationResult:
+    """
+    Generate synthetic segmentation queries and TikZ overlay annotations.
+    
+    Args:
+        client: OpenAI client instance
+        image_path: Path to the geometry image
+        tikz_code: The TikZ code that produced the image
+        model: Model to use for generation
+    
+    Returns:
+        SegmentationResult with list of annotations
+    """
+    # Encode image
+    base64_image = encode_image_to_base64(image_path)
+    media_type = get_image_media_type(image_path)
+
+    system_prompt = """You are a visual-TikZ grounding assistant.
+
+You will be given:
+(A) a rendered diagram image, and
+(B) the TikZ code that produced it.
+
+Goal:
+Generate a segmentation-annotation plan by producing append-only TikZ overlay snippets for a list of natural-language queries.
+
+Definition of "annotation":
+- "point": draw a small circle overlay around a labeled point/vertex.
+- "segment": highlight (color/thicken) an existing line segment by redrawing it with a highlight style.
+- "shape": highlight a polygon/triangle/rectangle region using \\fill or \\path[fill=...].
+- "arc": highlight an arc or curved segment.
+- "circle": highlight a circle (full or partial).
+- "sign": highlight geometric markers like right-angle symbols, parallel marks, tick marks, angle arcs.
+- "none": used when the query refers to something not present in the diagram.
+
+You MUST:
+- Use the image AND TikZ together to avoid hallucination.
+- Only annotate objects that are actually present and drawable.
+- Prefer minimal overlays that do NOT add extra label text on the image.
+- Ensure overlays can be appended at the very end of the existing tikzpicture (no edits to earlier code).
+- Use only TikZ constructs that will compile given the original code's coordinate names and paths.
+
+Overlay style rules:
+- Always use red color for overlays (e.g., [red, thick] or [fill=red, opacity=0.3]).
+- Keep append_tikz minimal: only what's needed for the overlay.
+
+Query set - EXACTLY 10 queries:
+- 7 POSITIVE (exists=true): You are encouraged to include a diverse mix from these categories:
+  * Points (e.g., "point A", "vertex B", "intersection point")
+  * Line segments (e.g., "segment AB", "the edge from C to D", "diagonal AC")
+  * Shapes (e.g., "triangle ABC", "quadrilateral ABCD", "the shaded region")
+  * Arcs (e.g., "arc from P to Q", "the curved segment")
+  * Circles (e.g., "circle centered at O", "the circumscribed circle")
+  * Signs/markers (e.g., "the right angle at B", "the angle mark at vertex C", "parallel marks on AB")
+- 3 NEGATIVE (exists=false): Plausible but absent items (e.g., "segment XY" if not drawn, "circle at Z" if none).
+"""
+
+    user_prompt = f"""Given the following diagram image and its TikZ code, generate EXACTLY 10 annotation queries.
+
+Requirements:
+- Do NOT overlay any extra text labels (no \\node labels). Overlays only.
+- Overlays must be appendable at the end of the tikzpicture.
+- EXACTLY 7 positive queries (diverse types: points, segments, shapes, arcs, circles, signs)
+- EXACTLY 3 negative queries (plausible but absent elements)
+
+TikZ:
+{tikz_code}
+"""
+    
+    # Call API with structured output parsing
+    response = client.beta.chat.completions.parse(
+        model=model,
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": user_prompt
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{media_type};base64,{base64_image}",
+                            "detail": "high"
+                        }
+                    }
+                ]
+            }
+        ],
+        response_format=SegmentationResult,
+    )
+    
+    # Extract parsed response
+    result = response.choices[0].message.parsed
+    
+    if result:
+        return result
+    
+    # Fallback: return empty result
+    return SegmentationResult(annotations=[])
+
+    
+    
 def create_openai_client(backend: str, vllm_url: str) -> OpenAI:
     """Create and return an OpenAI client instance."""
     if backend == "vllm":

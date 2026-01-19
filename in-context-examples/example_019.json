@@ -1,0 +1,6 @@
+{
+  "index": 19,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_1110413.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Coordinates\n  \\coordinate (A) at (0,4);\n  \\coordinate (B) at (-2,0);\n  \\coordinate (C) at (2,0);\n  \\draw (A) -- (B) -- (C) -- cycle;\n\n  \\coordinate (D) at ($(A)!0.6!(C)$);\n  \\coordinate (E) at ($(A)!0.5!(B)$);\n\n  \\coordinate (D_ext) at ($(E)!1.4!(D)$);\n  \\coordinate (E_ext) at ($(D)!1.4!(E)$);\n\n  \\draw (D_ext) -- (E_ext);\n  \n  % Segment BD\n  \\draw (B) -- (D);\n\n\n  % Labels\n  \\node[above] at (A) {A};\n  \\node[left] at (B) {B};\n  \\node[right] at (C) {C};\n  \\node[above right] at (D) {D};\n  \\node[above left] at (E) {E};\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives include triangle vertices A,B,C, segments AB,BC,CA, points D,E,D_ext,E_ext, and segment BD.\nStep 2: D on AC at 0.6 and E on AB at 0.5, with D and E collinear on the same extended line.\nStep 3: Fix A(0,4), B(-2,0), C(2,0); use linear interpolation for D and E, scale for extensions.\nStep 4: Build triangle, compute D and E, draw BD, then draw and extend the line through D and E.\nStep 5: Place labels: A above, B left, C right, D above right, and E above left.\nStep 6: No fills, arrows, grids, or axes; simple stroked lines drawn at overall scale 1."
+}

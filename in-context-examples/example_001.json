@@ -1,0 +1,6 @@
+{
+  "index": 1,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_126630.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Coordinates\n  \\coordinate (A) at (0,4);\n  \\coordinate (B) at (-3,0);\n  \\coordinate (C) at (3,0);\n\n  % Points D on AB, E on AC\n  \\coordinate (D) at ($(A)!0.5!(B)$);\n  \\coordinate (E) at ($(A)!0.5!(C)$);\n\n  % Triangle edges\n  \\draw (A) -- (B);\n  \\draw (A) -- (C);\n  \\draw (B) -- (C);\n\n  % Segments BE and CD\n  \\draw (B) -- (E);\n  \\draw (C) -- (D);\n\n\n  % Labels\n  \\node[above] at (A) {A};\n  \\node[left] at (B) {B};\n  \\node[right] at (C) {C};\n  \\node[left] at (D) {D};\n  \\node[right] at (E) {E};\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives are five points, three triangle edges, two crossing segments, and labels.  \nStep 2: D and E are midpoints of AB and AC respectively, and BE and CD intersect inside.  \nStep 3: Place A,B,C at fixed coordinates and compute D,E by 0.5 interpolation (midpoints).  \nStep 4: Define coordinates first, compute midpoints next, draw triangle edges, then draw BE and CD.  \nStep 5: Add node labels with anchors: A above, B left, C right, D left, E right.  \nStep 6: No fills, arrows, or grids; simple black stroked lines with scale set to one."
+}

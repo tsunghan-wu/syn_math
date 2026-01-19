@@ -1,0 +1,6 @@
+{
+  "index": 24,
+  "image_path": "mmr1/MM-MathInstruct/images/mm_math_instruct_1873107.png",
+  "tikz_code": "\\begin{tikzpicture}[scale=1]\n  % Coordinates\n  \\coordinate (A) at (0,3);\n  \\coordinate (B) at (2.5,0);\n  \\coordinate (C) at (1.8,1.5);\n  \\coordinate (S) at (0,0);\n\n  % Triangle edges\n  \\draw (A) -- (B);\n  \\draw (A) -- (C);\n  \\draw (B) -- (C);\n  \\draw (A) -- (S);\n  \\draw (S) -- (B);\n\n  % Dashed line SC\n  \\draw[dashed] (S) -- (C);\n\n  % Labels\n  \\node[above] at (A) {A};\n  \\node[right] at (B) {B};\n  \\node[right] at (C) {C};\n  \\node[left] at (S) {S};\n\\end{tikzpicture}",
+  "reasoning": "Step 1: Primitives: points A, B, C, S; segments AB, AC, BC, AS, SB; and dashed SC.\nStep 2: Key constraints: AS is vertical (x=0) and SB is horizontal (y=0), right angle at S.\nStep 3: Coordinates use fixed Cartesian values: A(0,3), B(2.5,0), C(1.8,1.5), S(0,0).\nStep 4: Define coordinates first, then draw segments, and finally place labels.\nStep 5: Draw order specifics: draw triangle edges AB, AC, BC, then AS and SB, then dashed SC.\nStep 6: Label placements via node positions: above A, right B and C, left S.\nStep 7: Extras: SC styled dashed, no fills or arrows, and overall scale set to one."
+}
