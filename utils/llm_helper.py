@@ -7,6 +7,8 @@ import json
 import os
 import random
 from pathlib import Path
+from typing import Optional
+from pydantic import BaseModel
 from openai import OpenAI
 
 from .prompts import (
@@ -16,6 +18,12 @@ from .prompts import (
     USER_PROMPT_ENDING,
     VARIATION_PROMPT_TEMPLATE
 )
+
+
+class TikZGenerationResult(BaseModel):
+    """Structured output for TikZ generation with reasoning."""
+    reasoning: str
+    tikz_code: str
 
 # Default path for in-context examples (relative to this file's parent)
 IN_CONTEXT_EXAMPLES_DIR = Path(__file__).parent.parent / "in-context-examples"
@@ -168,9 +176,9 @@ def generate_tikz_from_image(
     create_variation: bool = False,
     model: str = "gpt-4o",
     use_in_context_examples: bool = False
-) -> str:
+) -> TikZGenerationResult:
     """
-    Use OpenAI's vision API to generate TikZ code from an image.
+    Use OpenAI's vision API to generate TikZ code from an image with reasoning.
     
     Args:
         client: OpenAI client instance
@@ -180,13 +188,30 @@ def generate_tikz_from_image(
         use_in_context_examples: If True, include in-context TikZ examples in prompt
     
     Returns:
-        TikZ code string
+        TikZGenerationResult with reasoning and tikz_code
     """
     # Encode image
     base64_image = encode_image_to_base64(image_path)
     media_type = get_image_media_type(image_path)
     
-    # Select prompt
+    # Build system prompt for structured output
+    system_prompt = SYSTEM_PROMPT + """
+
+OUTPUT FORMAT:
+You MUST respond with a JSON object containing two fields:
+1. "reasoning": A SHORT pre-analysis + construction plan in exactly 6-10 steps.
+   - Each line MUST start with "Step k:" (k = 1,2,...).
+   - Each step should be ONE sentence, max 18 words.
+   - Cover: primitives, constraints, coordinate strategy, construction order, extras.
+   - Example format:
+     "Step 1: Primitives are five points, three triangle edges, two crossing segments, and labels.
+      Step 2: D and E are midpoints of AB and AC respectively, and BE and CD intersect inside.
+      Step 3: Place A,B,C at fixed coordinates and compute D,E by 0.5 interpolation (midpoints).
+      ..."
+2. "tikz_code": The complete TikZ code starting with \\begin{tikzpicture} and ending with \\end{tikzpicture}
+"""
+    
+    # Select user prompt
     if create_variation:
         user_prompt = VARIATION_PROMPT_TEMPLATE
     elif use_in_context_examples:
@@ -195,13 +220,13 @@ def generate_tikz_from_image(
     else:
         user_prompt = USER_PROMPT_TEMPLATE
     
-    # Call API
-    response = client.chat.completions.create(
+    # Call API with structured output parsing
+    response = client.beta.chat.completions.parse(
         model=model,
         messages=[
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT
+                "content": system_prompt
             },
             {
                 "role": "user",
@@ -220,15 +245,21 @@ def generate_tikz_from_image(
                 ]
             }
         ],
+        response_format=TikZGenerationResult,
     )
     
-    # Extract response
-    response_text = response.choices[0].message.content.strip()
+    # Extract parsed response
+    result = response.choices[0].message.parsed
     
-    # Extract TikZ code
+    # Clean up TikZ code if needed
+    if result:
+        result.tikz_code = extract_tikz_code(result.tikz_code)
+        return result
+    
+    # Fallback: try to extract from raw content
+    response_text = response.choices[0].message.content or ""
     tikz_code = extract_tikz_code(response_text)
-    
-    return tikz_code
+    return TikZGenerationResult(reasoning="", tikz_code=tikz_code)
 
 
 def create_openai_client(backend: str, vllm_url: str) -> OpenAI:

@@ -1,8 +1,8 @@
 # Configuration
 JSONL_FILE = "image_classifications_01102026.jsonl"
 IMAGE_ROOT = "/home/annelee/datasets/OpenMMReasoner-SFT-874K/sft_image"
-OUTPUT_DIR = "function_graph_01172026_v3"
-DEFAULT_COUNT = 100
+OUTPUT_DIR = "function_graph_01182026_v4"
+DEFAULT_COUNT = 50
 
 import argparse
 
@@ -31,8 +31,6 @@ def parse_args():
     parser.add_argument("--count", "-n", type=int, default=DEFAULT_COUNT,
                         help=f"Number of images to process (default: {DEFAULT_COUNT})")
     # Rendering options
-    parser.add_argument("--no-masks", action="store_true",
-                        help="Skip generating segmentation masks")
     parser.add_argument("--dpi", type=int, default=300,
                         help="DPI for output images (default: 300)")
     parser.add_argument("--shuffle", action="store_true",

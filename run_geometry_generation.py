@@ -2,8 +2,7 @@
 """
 Geometry Image to TikZ Generator
 
-Processes geometry images and generates TikZ code using vision LLMs,
-with segmentation masks and labeled PDFs.
+Processes geometry images and generates TikZ code using vision LLMs.
 
 Usage:
     python run_geometry_generation.py -n 10 --in-context-examples
@@ -69,7 +68,6 @@ def main():
     
     print(f"Output directory: {output_dir.absolute()}")
     print(f"Mode: {'Variation' if args.variation else 'Recreation'}")
-    print(f"Masks: {'Disabled' if args.no_masks else 'Enabled'}")
     print(f"In-context examples: {'Enabled (5 random examples)' if args.in_context_examples else 'Disabled'}")
     print("-" * 50)
     
@@ -87,7 +85,6 @@ def main():
             create_variation=args.variation,
             model=args.model,
             dpi=args.dpi,
-            generate_masks=not args.no_masks,
             use_in_context_examples=args.in_context_examples
         ):
             success_count += 1
